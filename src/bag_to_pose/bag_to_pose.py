@@ -9,10 +9,23 @@ def extract(bagfile, pose_topic, out_filename):
     f.write('# timestamp tx ty tz qx qy qz qz\n')    
     with rosbag.Bag(bagfile, 'r') as bag:
         for (topic, msg, ts) in bag.read_messages(topics=str(pose_topic)):
-            f.write('%.12f %.12f %.12f %.12f %.12f %.12f %.12f %.12f\n' % 
-                    (msg.header.stamp.to_sec(),
-                     msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z,
-                     msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w))
+            if False:
+                f.write('%.12f %.12f %.12f %.12f %.12f %.12f %.12f %.12f\n' % 
+                        (msg.header.stamp.to_sec(),
+                         msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z,
+                         msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w))
+            elif False:
+                # Geometry Message Pose
+                f.write('%.12f %.12f %.12f %.12f %.12f %.12f %.12f %.12f\n' % 
+                        (msg.header.stamp.to_sec(),
+                         msg.pose.position.x, msg.pose.position.y, msg.pose.position.z,
+                         msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w))
+            else:
+                # Transform Stamped
+                f.write('%.12f %.12f %.12f %.12f %.12f %.12f %.12f %.12f\n' % 
+                        (msg.header.stamp.to_sec(),
+                         msg.transform.translation.x, msg.transform.translation.y, msg.transform.translation.z,
+                         msg.transform.rotation.x, msg.transform.rotation.y, msg.transform.rotation.z, msg.transform.rotation.w))
             n += 1
     print('wrote ' + str(n) + ' imu messages to the file: ' + out_filename)
           
@@ -22,6 +35,9 @@ if __name__ == '__main__':
     ''')
     parser.add_argument('bag', help='Bagfile')
     parser.add_argument('topic', help='Topic')
-    args = parser.parse_args()
+    parser.add_argument('--suffix', default='pose.txt')
+    args = parser.parse_args()    
+    out_filename = args.bag[:-4]+'_'+args.suffix
     print('Extract pose from bag '+args.bag+' in topic ' + args.topic)
-    extract(args.bag, args.topic, 'pose.txt')
+    print('Saving to file '+out_filename)
+    extract(args.bag, args.topic, out_filename)

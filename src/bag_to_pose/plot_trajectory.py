@@ -14,7 +14,7 @@ def plot_trajectory(filename):
     ax.plot(data[:,1], data[:,2])
     ax.legend()
     fig.tight_layout()
-    fig.savefig('trajectory.pdf')
+    fig.savefig(filename+'.pdf')
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Plot poses')
